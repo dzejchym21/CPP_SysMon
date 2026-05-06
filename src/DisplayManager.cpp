@@ -4,6 +4,7 @@
 #include <curses.h>
 #include <vector>
 
+
 DisplayManager::DisplayManager() {
     initscr();
     start_color();
@@ -20,7 +21,7 @@ DisplayManager::~DisplayManager() {
     endwin();
 }
 
-void DisplayManager::drawHeader(SortCategory currentSort) {
+void DisplayManager::drawHeader(SortCategory currentSort, bool ascending) {
     attron(COLOR_PAIR(1) | A_BOLD);
     int currentX = 0;
 
@@ -33,6 +34,11 @@ void DisplayManager::drawHeader(SortCategory currentSort) {
             mvaddch(0, currentX + i, ' ');
         }
 
+        const char* end = " ";
+        if (pair == 2) {
+            end = ascending ? "\u25B2" : "\u25BC";
+        }
+
         if (leftAlign) {
             mvprintw(0, currentX , "%.*s", width, label);
         } else {
@@ -42,16 +48,17 @@ void DisplayManager::drawHeader(SortCategory currentSort) {
         }
 
         currentX += width;
-        mvaddch(0, currentX, ' ');
+        mvaddstr(0, currentX, end);
         currentX += 1;
         attroff(COLOR_PAIR(pair) | A_BOLD);
     };
 
-    drawCol("PID ", 9, SortCategory::PID, false);
+    drawCol("PID", 8, SortCategory::PID, false);
     drawCol("PPID", 7, SortCategory::OTHER, false);
-    drawCol("USER", 15, SortCategory::OTHER, true);
+    drawCol("USER", 13, SortCategory::OTHER, true);
     drawCol("NICE", 8, SortCategory::OTHER, false);
-    drawCol("RES (kB)", 12, SortCategory::MEM, false);
+    drawCol("ST", 2, SortCategory::OTHER, false);
+    drawCol("RES (kB)", 9, SortCategory::MEM, false);
     drawCol("%CPU", 5, SortCategory::CPU, false);
     drawCol("COMMAND", 20, SortCategory::NAME, true);
     //mvprintw(0, 0, "%8s %8s %-15s %-10s %8s %-12s %-5s",
@@ -61,23 +68,25 @@ void DisplayManager::drawHeader(SortCategory currentSort) {
 }
 
 
-void DisplayManager::render(const std::vector<Process>& processes, SortCategory currentSort) {
-    clear();
-    drawHeader(currentSort);
+void DisplayManager::render(const std::vector<const Process*>& processes, SortCategory currentSort, bool ascending) {
+    erase();
+    //clear();
+    drawHeader(currentSort, ascending);
 
     int row = 1;
     int maxRows = LINES - 1;
-    for (const auto& proc : processes) {
+    for (const auto* proc : processes) {
         if (row > maxRows) break;
 
-        mvprintw(row, 0, "%8d %8d %-15.15s %8d %12ld %5.2f %-15.15s",
-            proc.getPid(),
-            proc.getPpid(),
-            proc.getUser().c_str(),
-            proc.getNice(),
-            proc.getMemoryUsage(),
-            proc.getCpuUsage(),
-            proc.getName().c_str());
+        mvprintw(row, 0, "%8d %8d %-13.13s %8d %2c %9ld %5.2f %-15.15s",
+            proc->getPid(),
+            proc->getPpid(),
+            proc->getUser().c_str(),
+            proc->getNice(),
+            proc->getState(),
+            proc->getMemoryUsage(),
+            proc->getCpuUsage(),
+            proc->getName().c_str());
 
         row++;
     }

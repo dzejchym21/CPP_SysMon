@@ -8,7 +8,11 @@ enum class SortCategory {
     CPU,
     MEM,
     PID,
+    PPID,
+    STATE,
+    NICE,
     NAME,
+    USER,
     OTHER
 };
 
@@ -19,7 +23,7 @@ private:
 public:
     void refresh();
     std::unordered_map<int, Process> getProcesses() const;
-    std::vector<Process> getProcessesSnapshot(SortCategory sortCat);
+    std::vector<const Process*> getProcessesSnapshot(SortCategory sortCat, bool ascending);
 };
 
 

@@ -9,8 +9,8 @@ class DisplayManager {
 public:
     DisplayManager();
     ~DisplayManager();
-    void drawHeader(SortCategory currentSort);
-    void render(const std::vector<Process>& processes, SortCategory currentSort);
+    void drawHeader(SortCategory currentSort, bool ascending);
+    void render(const std::vector<const Process*>& processes, SortCategory currentSort, bool ascending);
 };
 
 

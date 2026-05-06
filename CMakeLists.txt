@@ -3,7 +3,7 @@ project(CPP_SysMon)
 
 set(CMAKE_CXX_STANDARD 20)
 
-# Ustawiamy flagi, aby find_package szukał wersji ncurses
+# 1. Kluczowe flagi przed szukaniem pakietu
 set(CURSES_NEED_NCURSES TRUE)
 set(CURSES_NEED_WIDE TRUE)
 find_package(Curses REQUIRED)
@@ -19,13 +19,18 @@ add_executable(CPP_SysMon
         src/DisplayManager.cpp
         include/DisplayManager.h)
 
-# Tutaj wskazujemy ścieżki inkludowania
+# 2. Poprawiona ścieżka inkludowania
 target_include_directories(CPP_SysMon PRIVATE
         include
-        ${CURSES_INCLUDE_PATH}  # Standardowa ścieżka do curses.h
+        ${CURSES_INCLUDE_DIRS} # Zmieniono z _PATH na _DIRS (standard dla find_package)
 )
 
-# Łączymy z bibliotekami
-target_link_libraries(CPP_SysMon PUBLIC ${CURSES_LIBRARIES})
+# 3. Dodanie definicji dla szerokich znaków (KLUCZOWE)
+# Bez tego ncurses.h może nie udostępnić funkcji dla Unicode
+target_compile_definitions(CPP_SysMon PRIVATE
+        _GNU_SOURCE
+        _XOPEN_SOURCE_EXTENDED
+)
 
-target_compile_definitions(CPP_SysMon PRIVATE _GNU_SOURCE)
+# 4. Łączenie z bibliotekami
+target_link_libraries(CPP_SysMon PUBLIC ${CURSES_LIBRARIES})

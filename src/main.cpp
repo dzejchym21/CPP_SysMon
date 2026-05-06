@@ -1,19 +1,31 @@
 #include <iostream>
+#include <clocale>
 #include <curses.h>
 #include <chrono>
 #include <thread>
 #include "DisplayManager.h"
 
 int main() {
+    setlocale(LC_ALL, "");
     DisplayManager dm;
     ProcessManager pm;
 
     bool running = true;
     bool needsRedraw = true;
-
     auto lastRefreshTime = std::chrono::steady_clock::now();
     const auto refreshInterval = std::chrono::seconds(1);
     SortCategory currentSort = SortCategory::CPU;
+    bool ascending = false;
+
+    auto updateSort = [&](SortCategory sortCat) {
+        if (currentSort == sortCat) {
+            ascending = !ascending;
+        } else {
+            currentSort = sortCat;
+            ascending = false;
+        }
+        needsRedraw = true;
+    };
 
     pm.refresh();
 
@@ -32,25 +44,21 @@ int main() {
                 running = false;
                 break;
             case 'm':
-                currentSort = SortCategory::MEM;
-                needsRedraw = true;
+                updateSort(SortCategory::MEM);
                 break;
             case 'c':
-                currentSort = SortCategory::CPU;
-                needsRedraw = true;
+                updateSort(SortCategory::CPU);
                 break;
             case 'n':
-                currentSort = SortCategory::NAME;
-                needsRedraw = true;
+                updateSort(SortCategory::NAME);
                 break;
             case 'p':
-                currentSort = SortCategory::PID;
-                needsRedraw = true;
+                updateSort(SortCategory::PID);
                 break;
         }
 
         if (needsRedraw && running) {
-            dm.render(pm.getProcessesSnapshot(currentSort), currentSort);
+            dm.render(pm.getProcessesSnapshot(currentSort, ascending), currentSort, ascending);
             needsRedraw = false;
         }
     }
