@@ -29,7 +29,7 @@ void ProcessManager::refresh() {
     }
 }
 
-std::unordered_map<int, Process> ProcessManager::getProcesses() const {
+std::map<int, Process> ProcessManager::getProcesses() const {
     return processes;
 }
 
@@ -55,10 +55,25 @@ std::vector<const Process*> ProcessManager::getProcessesSnapshot(SortCategory so
         case SortCategory::PID:
             std::ranges::sort(vec, compare, [](const Process* p) {return p->getPid();});
             break;
+        case SortCategory::STATE:
+            std::ranges::sort(vec, compare, [](const Process* p) {return p->getState();});
+            break;
         case SortCategory::NAME:
             std::ranges::sort(vec, [ascending](const Process* a, const Process* b) {
                 std::string_view s1 = a->getName();
                 std::string_view s2 = b->getName();
+
+                bool result = std::ranges::lexicographical_compare(s1, s2, [](unsigned char c1, unsigned char c2) {
+                    return std::tolower(c1) < std::tolower(c2);
+                });
+
+                return ascending ? result : !result;
+            });
+            break;
+        case SortCategory::USER:
+            std::ranges::sort(vec, [ascending](const Process* a, const Process* b) {
+                std::string_view s1 = a->getUser();
+                std::string_view s2 = b->getUser();
 
                 bool result = std::ranges::lexicographical_compare(s1, s2, [](unsigned char c1, unsigned char c2) {
                     return std::tolower(c1) < std::tolower(c2);

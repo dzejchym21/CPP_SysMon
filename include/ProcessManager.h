@@ -1,7 +1,7 @@
 #ifndef PROCESSMANAGER_H
 #define PROCESSMANAGER_H
 #include "Process.h"
-#include <unordered_map>
+#include <map>
 #include <vector>
 
 enum class SortCategory {
@@ -9,6 +9,8 @@ enum class SortCategory {
     MEM,
     PID,
     PPID,
+    THREADS,
+    TIME,
     STATE,
     NICE,
     NAME,
@@ -19,10 +21,10 @@ enum class SortCategory {
 
 class ProcessManager {
 private:
-    std::unordered_map<int, Process> processes;
+    std::map<int, Process> processes;
 public:
     void refresh();
-    std::unordered_map<int, Process> getProcesses() const;
+    std::map<int, Process> getProcesses() const;
     std::vector<const Process*> getProcessesSnapshot(SortCategory sortCat, bool ascending);
 };
 

@@ -55,6 +55,12 @@ int main() {
             case 'p':
                 updateSort(SortCategory::PID);
                 break;
+            case 's':
+                updateSort(SortCategory::STATE);
+                break;
+            case 'u':
+                updateSort(SortCategory::USER);
+                break;
         }
 
         if (needsRedraw && running) {

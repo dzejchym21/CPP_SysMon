@@ -55,9 +55,9 @@ void DisplayManager::drawHeader(SortCategory currentSort, bool ascending) {
 
     drawCol("PID", 8, SortCategory::PID, false);
     drawCol("PPID", 7, SortCategory::OTHER, false);
-    drawCol("USER", 13, SortCategory::OTHER, true);
+    drawCol("USER", 13, SortCategory::USER, true);
     drawCol("NICE", 8, SortCategory::OTHER, false);
-    drawCol("ST", 2, SortCategory::OTHER, false);
+    drawCol("ST", 2, SortCategory::STATE, false);
     drawCol("RES (kB)", 9, SortCategory::MEM, false);
     drawCol("%CPU", 5, SortCategory::CPU, false);
     drawCol("COMMAND", 20, SortCategory::NAME, true);
