@@ -61,6 +61,9 @@ int main() {
             case 'u':
                 updateSort(SortCategory::USER);
                 break;
+            case 't':
+                updateSort(SortCategory::TIME);
+                break;
         }
 
         if (needsRedraw && running) {

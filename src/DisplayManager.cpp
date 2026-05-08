@@ -24,6 +24,7 @@ DisplayManager::~DisplayManager() {
 void DisplayManager::drawHeader(SortCategory currentSort, bool ascending) {
     attron(COLOR_PAIR(1) | A_BOLD);
     int currentX = 0;
+    int row = 4;
 
     auto drawCol = [&](const char* label, int width, SortCategory colCat, bool leftAlign) {
         int pair = (currentSort == colCat && colCat != SortCategory::OTHER) ? 2 : 1;
@@ -31,7 +32,7 @@ void DisplayManager::drawHeader(SortCategory currentSort, bool ascending) {
         attron(COLOR_PAIR(pair) | A_BOLD);
 
         for (int i = 0; i < width; i++) {
-            mvaddch(0, currentX + i, ' ');
+            mvaddch(row, currentX + i, ' ');
         }
 
         const char* end = " ";
@@ -40,15 +41,15 @@ void DisplayManager::drawHeader(SortCategory currentSort, bool ascending) {
         }
 
         if (leftAlign) {
-            mvprintw(0, currentX , "%.*s", width, label);
+            mvprintw(row, currentX , "%.*s", width, label);
         } else {
             int len = strlen(label);
             int startPos = (len > width) ? currentX : currentX + (width - len);
-            mvprintw(0, startPos, "%.*s", width, label);
+            mvprintw(row, startPos, "%.*s", width, label);
         }
 
         currentX += width;
-        mvaddstr(0, currentX, end);
+        mvaddstr(row, currentX, end);
         currentX += 1;
         attroff(COLOR_PAIR(pair) | A_BOLD);
     };
@@ -58,8 +59,10 @@ void DisplayManager::drawHeader(SortCategory currentSort, bool ascending) {
     drawCol("USER", 13, SortCategory::USER, true);
     drawCol("NICE", 8, SortCategory::OTHER, false);
     drawCol("ST", 2, SortCategory::STATE, false);
+    drawCol("TH", 2, SortCategory::THREADS, false);
     drawCol("RES (kB)", 9, SortCategory::MEM, false);
     drawCol("%CPU", 5, SortCategory::CPU, false);
+    drawCol("TIME+", 10, SortCategory::TIME, false);
     drawCol("COMMAND", 20, SortCategory::NAME, true);
     //mvprintw(0, 0, "%8s %8s %-15s %-10s %8s %-12s %-5s",
     //        "PID", "PPID", "COMMAND", "USER", "NICE", "RES (kB)", "%CPU");
@@ -73,19 +76,25 @@ void DisplayManager::render(const std::vector<const Process*>& processes, SortCa
     //clear();
     drawHeader(currentSort, ascending);
 
-    int row = 1;
+    int row = 5;
     int maxRows = LINES - 1;
     for (const auto* proc : processes) {
         if (row > maxRows) break;
 
-        mvprintw(row, 0, "%8d %8d %-13.13s %8d %2c %9ld %5.2f %-15.15s",
+        double ts = proc->getTotalSeconds();
+        int mins = static_cast<int>(ts) / 60;
+        double secs = ts - (mins * 60);
+
+        mvprintw(row, 0, "%8d %8d %-12.12s %8d %2c %2d %9ld %6.2f %3d:%05.2f %-15.15s",
             proc->getPid(),
             proc->getPpid(),
             proc->getUser().c_str(),
             proc->getNice(),
             proc->getState(),
+            proc->getThreads(),
             proc->getMemoryUsage(),
             proc->getCpuUsage(),
+            mins, secs,
             proc->getName().c_str());
 
         row++;

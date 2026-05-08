@@ -10,9 +10,11 @@ struct ProcessData {
     std::string user;
     char state;
     int nice;
+    int threads;
     long memoryUsage;
     long totalTime;
     double systemUpTime;
+    double totalSeconds;
 };
 
 
@@ -25,6 +27,8 @@ private:
     char state;
     long memoryUsage;
     int nice;
+    int threads;
+    double totalSeconds;
 
     // Fields to count the %CPU
     double cpuUsage;
@@ -37,12 +41,14 @@ public:
     int getPid() const;
     int getPpid() const;
     int getNice() const;
+    int getThreads() const;
     const std::string& getName() const;
     const std::string& getUser() const;
     char getState() const;
     double getCpuUsage() const;
     long getMemoryUsage() const;
     long getLastTotalTime() const;
+    double getTotalSeconds() const;
 
     // Setters
     void setPpid(int id);

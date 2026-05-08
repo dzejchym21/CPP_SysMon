@@ -99,9 +99,9 @@ void ProcParser::fillDynamicData(const int pid, ProcessData& pd) {
 
         for (size_t i = 0; i < 3; ++i) ss >> dummy;
 
-        ss >> pd.nice;
+        ss >> pd.nice >> pd.threads;
 
-        for (size_t i = 0; i < 4; ++i) ss >> dummy;
+        for (size_t i = 0; i < 3; ++i) ss >> dummy;
 
         ss >> rss_pages;
         pd.memoryUsage = rss_pages * (pageSize / 1024);

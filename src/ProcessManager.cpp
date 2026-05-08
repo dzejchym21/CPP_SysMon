@@ -58,16 +58,26 @@ std::vector<const Process*> ProcessManager::getProcessesSnapshot(SortCategory so
         case SortCategory::STATE:
             std::ranges::sort(vec, compare, [](const Process* p) {return p->getState();});
             break;
+        case SortCategory::THREADS:
+            std::ranges::sort(vec, compare, [](const Process* p) {return p->getThreads();});
+            break;
+        case SortCategory::TIME:
+            std::ranges::sort(vec, compare, [](const Process* p) {return p->getTotalSeconds();});
+            break;
         case SortCategory::NAME:
             std::ranges::sort(vec, [ascending](const Process* a, const Process* b) {
                 std::string_view s1 = a->getName();
                 std::string_view s2 = b->getName();
 
-                bool result = std::ranges::lexicographical_compare(s1, s2, [](unsigned char c1, unsigned char c2) {
+                auto cmp = [](unsigned char c1, unsigned char c2) {
                     return std::tolower(c1) < std::tolower(c2);
-                });
+                };
 
-                return ascending ? result : !result;
+                if (ascending) {
+                    return std::ranges::lexicographical_compare(s1, s2, cmp);
+                } else {
+                    return std::ranges::lexicographical_compare(s2, s1, cmp);
+                }
             });
             break;
         case SortCategory::USER:
@@ -75,11 +85,15 @@ std::vector<const Process*> ProcessManager::getProcessesSnapshot(SortCategory so
                 std::string_view s1 = a->getUser();
                 std::string_view s2 = b->getUser();
 
-                bool result = std::ranges::lexicographical_compare(s1, s2, [](unsigned char c1, unsigned char c2) {
+                auto cmp = [](unsigned char c1, unsigned char c2) {
                     return std::tolower(c1) < std::tolower(c2);
-                });
+                };
 
-                return ascending ? result : !result;
+                if (ascending) {
+                    return std::ranges::lexicographical_compare(s1, s2, cmp);
+                } else {
+                    return std::ranges::lexicographical_compare(s2, s1, cmp);
+                }
             });
             break;
         default:
