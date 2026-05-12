@@ -17,7 +17,8 @@ add_executable(CPP_SysMon
         src/ProcessManager.cpp
         include/ProcessManager.h
         src/DisplayManager.cpp
-        include/DisplayManager.h)
+        include/DisplayManager.h
+        include/CpuData.h)
 
 # 2. Poprawiona ścieżka inkludowania
 target_include_directories(CPP_SysMon PRIVATE
