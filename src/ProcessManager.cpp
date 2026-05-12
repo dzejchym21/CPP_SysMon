@@ -119,7 +119,11 @@ void ProcessManager::updateCpuStats() {
         if (deltaTotal > 0) {
             cpuUsages[i] = (1.0 - static_cast<double>(deltaIdle) / deltaTotal) * 100.0;
         }
-
-        lastCpuStats = currentCpuStats;
     }
+
+    lastCpuStats = currentCpuStats;
+}
+
+std::vector<double> ProcessManager::getAllCpuStats() {
+    return cpuUsages;
 }

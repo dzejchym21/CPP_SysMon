@@ -19,7 +19,6 @@ enum class SortCategory {
     OTHER
 };
 
-
 class ProcessManager {
 private:
     std::map<int, Process> processes;
@@ -30,6 +29,7 @@ public:
     void updateCpuStats();
     std::map<int, Process> getProcesses() const;
     std::vector<const Process*> getProcessesSnapshot(SortCategory sortCat, bool ascending);
+    std::vector<double> getAllCpuStats();
 };
 
 

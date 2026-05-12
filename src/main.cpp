@@ -27,12 +27,14 @@ int main() {
         needsRedraw = true;
     };
 
+    pm.updateCpuStats();
     pm.refresh();
 
     while (running) {
         auto currentTime = std::chrono::steady_clock::now();
 
         if (currentTime - lastRefreshTime >= refreshInterval) {
+            pm.updateCpuStats();
             pm.refresh();
             lastRefreshTime = currentTime;
             needsRedraw = true;
@@ -67,6 +69,8 @@ int main() {
         }
 
         if (needsRedraw && running) {
+            erase();
+            dm.drawCpuDashboard(pm.getAllCpuStats());
             dm.render(pm.getProcessesSnapshot(currentSort, ascending), currentSort, ascending);
             needsRedraw = false;
         }

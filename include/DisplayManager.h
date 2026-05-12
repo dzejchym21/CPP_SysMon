@@ -11,6 +11,7 @@ public:
     ~DisplayManager();
     void drawHeader(SortCategory currentSort, bool ascending);
     void render(const std::vector<const Process*>& processes, SortCategory currentSort, bool ascending);
+    void drawCpuDashboard(const std::vector<double>& usages);
 };
 
 

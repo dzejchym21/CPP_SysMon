@@ -1,5 +1,5 @@
 #include "DisplayManager.h"
-
+#include <cmath>
 #include <cstring>
 #include <curses.h>
 #include <vector>
@@ -10,6 +10,9 @@ DisplayManager::DisplayManager() {
     start_color();
     init_pair(1, COLOR_BLACK, COLOR_WHITE);
     init_pair(2, COLOR_BLACK, COLOR_GREEN);
+    init_pair(3, COLOR_GREEN, COLOR_BLACK);
+    init_pair(4, COLOR_YELLOW, COLOR_BLACK);
+    init_pair(5, COLOR_RED, COLOR_BLACK);
     keypad(stdscr, true);
     noecho();
     curs_set(0);
@@ -72,7 +75,7 @@ void DisplayManager::drawHeader(SortCategory currentSort, bool ascending) {
 
 
 void DisplayManager::render(const std::vector<const Process*>& processes, SortCategory currentSort, bool ascending) {
-    erase();
+    //erase();
     //clear();
     drawHeader(currentSort, ascending);
 
@@ -100,4 +103,33 @@ void DisplayManager::render(const std::vector<const Process*>& processes, SortCa
         row++;
     }
     refresh();
+}
+
+void DisplayManager::drawCpuDashboard(const std::vector<double>& usages) {
+    int row = 0;
+    for (int i = 0; i < 4; i++) {
+        int numOfBars = 0;
+
+        if (usages[i] > 0.0) {
+            numOfBars = static_cast<int>(usages[i] / 5.0) + 1;
+        }
+
+        int colorPair = 3;
+        if (usages[i] > 80.0) colorPair = 5;
+        else if (usages[i] > 40.0) colorPair = 4;
+
+        mvprintw(row, 0, "%-d[", i + 1);
+        for (int j = 0; j < 20; j++) {
+            if (j < numOfBars) {
+                attron(COLOR_PAIR(colorPair) | A_BOLD);
+                mvaddch(row, j + 2, '|');
+                attroff(COLOR_PAIR(colorPair) | A_BOLD);
+            } else {
+                mvaddch(row, j + 2, ' ');
+            }
+
+        }
+        mvprintw(row, 21, "] %3.1f%%", usages[i]);
+        row++;
+    }
 }
