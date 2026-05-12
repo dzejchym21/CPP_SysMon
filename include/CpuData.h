@@ -13,4 +13,4 @@ struct CpuData {
     }
 };
 
-#endif //CPP_SYSMON_CPUDATA_H
+#endif

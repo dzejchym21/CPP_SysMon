@@ -112,3 +112,23 @@ void ProcParser::fillDynamicData(const int pid, ProcessData& pd) {
         }
     }
 }
+
+std::vector<CpuData> ProcParser::parseAllCpus() {
+    std::vector<CpuData> cpus;
+    std::ifstream file("/proc/stat");
+    std::string line;
+    while (std::getline(file, line)) {
+        if (line.compare(0, 3, "cpu") == 0 && isdigit(line[3])) {
+            std::stringstream ss(line);
+            std::string name;
+            CpuData data;
+            ss >> name;
+            ss >> data.user >> data.nice >> data.system >> data.idle >> data.iowait
+                >> data.irq >> data.softirq;
+
+            cpus.emplace_back(data);
+        }
+    }
+
+    return cpus;
+}
