@@ -113,7 +113,7 @@ void ProcParser::fillDynamicData(const int pid, ProcessData& pd) {
     }
 }
 
-std::vector<CpuData> ProcParser::parseAllCpus() {
+std::vector<CpuData> ProcParser::getAllCpus() {
     std::vector<CpuData> cpus;
     std::ifstream file("/proc/stat");
     std::string line;

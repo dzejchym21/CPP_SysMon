@@ -102,3 +102,24 @@ std::vector<const Process*> ProcessManager::getProcessesSnapshot(SortCategory so
 
     return vec;
 }
+
+void ProcessManager::updateCpuStats() {
+    std::vector<CpuData> currentCpuStats = ProcParser::getAllCpus();
+
+    if (lastCpuStats.empty()) {
+        lastCpuStats = currentCpuStats;
+        cpuUsages.resize(currentCpuStats.size(), 0.0);
+        return;
+    }
+
+    for (int i = 0; i < currentCpuStats.size(); i++) {
+        long deltaTotal = currentCpuStats[i].getTotalTime() - lastCpuStats[i].getTotalTime();
+        long deltaIdle = currentCpuStats[i].getIdleTime() - lastCpuStats[i].getIdleTime();
+
+        if (deltaTotal > 0) {
+            cpuUsages[i] = (1.0 - static_cast<double>(deltaIdle) / deltaTotal) * 100.0;
+        }
+
+        lastCpuStats = currentCpuStats;
+    }
+}

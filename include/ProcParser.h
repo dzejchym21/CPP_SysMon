@@ -8,7 +8,7 @@
 class ProcParser {
 public:
     static std::vector<int> getAllPids();
-    static std::vector<CpuData> parseAllCpus();
+    static std::vector<CpuData> getAllCpus();
     static void fillStaticData(int pid, ProcessData& pd);
     static void fillDynamicData(int pid, ProcessData& pd);
     static Process buildProcess(int pid);
